@@ -334,14 +334,68 @@ echo ""
 # ═══════════════════════════════════════════════════════════════
 step_title 1 "安装 OpenClaw"
 
+# 版本选择器
+echo -e "${CYAN}请选择要安装的 OpenClaw 版本：${NC}"
+echo ""
+echo -e "  ${GREEN}1${NC}) 2026.3.13  - 推荐稳定版（默认）"
+echo -e "  ${YELLOW}2${NC}) 2026.3.17  - 较新版本"
+echo -e "  ${YELLOW}3${NC}) 2026.2.28  - 旧稳定版"
+echo -e "  ${BLUE}4${NC}) 其他版本   - 自定义版本号"
+echo -e "  ${RED}5${NC}) latest     - 最新版（不推荐）"
+echo ""
+read -p "请输入选项 [1-5，默认1]: " version_choice
+
+# 设置默认版本
+OPENCLAW_VERSION="2026.3.13"
+
+case $version_choice in
+    2)
+        OPENCLAW_VERSION="2026.3.17"
+        ;;
+    3)
+        OPENCLAW_VERSION="2026.2.28"
+        ;;
+    4)
+        echo ""
+        read -p "请输入版本号 (例如: 2026.3.13): " custom_version
+        if [ -n "$custom_version" ]; then
+            OPENCLAW_VERSION="$custom_version"
+        fi
+        ;;
+    5)
+        echo ""
+        echo -e "${RED}⚠️  警告：latest 版本可能存在兼容性问题！${NC}"
+        read -p "确定要安装 latest 版本? [y/N]: " confirm_latest
+        if [[ "$confirm_latest" =~ ^[Yy]$ ]]; then
+            OPENCLAW_VERSION="latest"
+        else
+            echo -e "${YELLOW}已取消，使用默认稳定版 2026.3.13${NC}"
+            OPENCLAW_VERSION="2026.3.13"
+        fi
+        ;;
+    *)
+        # 默认使用 2026.3.13
+        OPENCLAW_VERSION="2026.3.13"
+        ;;
+esac
+
+echo ""
+echo -e "${GREEN}✓${NC} 选择安装版本: ${CYAN}$OPENCLAW_VERSION${NC}"
+echo ""
+
 echo "将执行以下操作："
-echo "  1. 安装 OpenClaw 2026.3.13"
+echo "  1. 安装 OpenClaw $OPENCLAW_VERSION"
 echo "  2. 运行 onboard 初始化"
 echo ""
 
 if confirm_continue; then
-    echo -e "${BLUE}正在安装 OpenClaw...${NC}"
-    npm install -g openclaw@2026.3.13
+    echo -e "${BLUE}正在安装 OpenClaw $OPENCLAW_VERSION...${NC}"
+    
+    if [ "$OPENCLAW_VERSION" = "latest" ]; then
+        npm install -g openclaw
+    else
+        npm install -g openclaw@$OPENCLAW_VERSION
+    fi
     
     echo ""
     echo -e "${BLUE}初始化 OpenClaw...${NC}"
