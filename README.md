@@ -11,19 +11,20 @@
 - ✅ 8 个科研专用子智能体（文献调研 → 论文审稿全流程）
 - ✅ 265+ 个技能（LabClaw 240个 + ClawHub 25+个）
 - ✅ 完整的论文工作流自动化
-- ✅ API 网关集成（邮件、办公、开发工具）
+- ✅ API 网关集成（邮件、搜索、论文图表）
+- ✅ 断点续传支持（中断后可从断点继续）
 
 **适用场景：**
 - 学术研究全流程管理
 - 论文撰写与审稿
 - 实验设计与代码实现
-- 科研团队协作
+- 科研热点邮件推送
 
 ---
 
-## 🚀 快速开始（推荐方式）
+## 🚀 快速开始
 
-### 方式一：交互式一键配置（推荐 ⭐）
+### 一键配置（推荐 ⭐）
 
 ```bash
 # 1. 克隆仓库
@@ -34,85 +35,38 @@ cd XClaw-Auto-Configuration
 ./setup.sh
 ```
 
-**`setup.sh` 会自动完成以下配置：**
+**`setup.sh` 自动完成 6 步配置：**
 
 | 步骤 | 内容 | 说明 |
 |------|------|------|
-| 1 | 安装 OpenClaw | 自动检测并安装指定版本 |
-| 2 | 安装飞书插件 | 可选，如使用飞书渠道 |
-| 3 | 配置 8 个子智能体 | 自动复制工作区和配置文件 |
-| 4 | 安装 265+ 技能 | LabClaw + ClawHub 核心技能 |
-| 5 | 配置 API Key | 交互式输入 Maton/Tavily/GitHub |
-| 6 | 重启并验证 | 自动重启服务并检查状态 |
+| 0 | 环境检查 | Node.js / npm / Git / Python3 / clawhub |
+| 1 | 安装 OpenClaw | 动态获取版本列表，推荐 2026.3.13 |
+| 2 | 安装飞书插件 | 可选，自动验证安装 |
+| 3 | 配置 8 个子智能体 | 自动合并配置到 openclaw.json |
+| 4 | 安装 265+ 技能 | LabClaw + ClawHub + 搜索技能，自动配置 TOOLS.md |
+| 5 | 配置 API Key | 保存到 `~/.openclaw/.env`，含获取链接 |
+| 6 | 重启 Gateway | 自动重启并验证运行状态 |
 
-运行脚本后，按提示操作即可！
+**每步执行完自动验证，无需手动检查！**
 
----
+### 断点续传
 
-### 方式二：手动配置
+如果脚本中断（网络问题、手动 Ctrl+C 等），重新运行 `./setup.sh` 会自动检测断点：
 
-如需手动配置，请参考以下步骤：
-
-#### 步骤 1：安装 OpenClaw
-
-```bash
-# 安装指定版本（推荐 2026.3.13）
-npm install -g openclaw@2026.3.13
-
-# 初始化配置
-openclaw onboard --install-daemon
 ```
+🔄 检测到上次未完成的配置
 
-> 详细步骤见 [1. 卸载旧版本和安装指定版本XClaw](./1.%20卸载旧版本和安装指定版本XClaw/)
+📋 步骤进度：
+  ✓ 步骤 0: 环境检查
+  ✓ 步骤 1: 安装 OpenClaw
+  ○ 步骤 2: 安装飞书插件
+  ○ 步骤 3: 配置子智能体
+  ...
 
-#### 步骤 2：安装飞书插件（可选）
-
-```bash
-npx -y @larksuite/openclaw-lark@2026.3.17 install
-```
-
-#### 步骤 3：配置子智能体
-
-```bash
-# 复制子智能体工作区
-cp -r "4.子智能体/workspace-"* ~/.openclaw/
-
-# 生成配置文件（从模板）
-sed "s|{{HOME}}|$HOME|g" "4.子智能体/agents_config.template.json" > ~/.openclaw/agents_config.json
-```
-
-#### 步骤 4：安装技能
-
-```bash
-# 安装 LabClaw（240个生物医学技能）
-cd ~/.openclaw/skills
-git clone https://github.com/wu-yc/LabClaw.git
-cp -r LabClaw/skills/* .
-
-# 安装 ClawHub 核心技能
-clawhub install arxiv-watcher literature-review perplexity
-clawhub install senior-architect backend-patterns
-clawhub install test-runner docker-essentials wandb-monitor debug-pro
-clawhub install ai-pdf-builder typetex chart-image nano-pdf
-clawhub install git-essentials get-tldr claude-optimised god-mode
-clawhub install api-gateway
-```
-
-#### 步骤 5：配置 API 密钥
-
-```bash
-# Maton API Gateway（可选，用于邮件/办公集成）
-export MATON_API_KEY="your-maton-api-key"
-
-# GitHub（可选）
-export GITHUB_TOKEN="ghp_your_token"
-export GITHUB_USERNAME="your_username"
-```
-
-#### 步骤 6：重启服务
-
-```bash
-openclaw gateway restart
+请选择：
+  1) 断点续传 — 跳过已完成的步骤，从断点继续（推荐）
+  2) 全部重来 — 清除进度，从头开始
+  3) 仅执行指定步骤
 ```
 
 ---
@@ -122,38 +76,64 @@ openclaw gateway restart
 ```
 XClaw-Auto-Configuration/
 ├── README.md                      # 本文件
-├── setup.sh                       # ⭐ 交互式一键配置脚本
+├── setup.sh                       # ⭐ 交互式一键配置脚本（断点续传）
 ├── install.sh                     # 非交互式安装脚本
 ├── validate.sh                    # 配置验证脚本
+├── .env                           # API Key 配置模板
 ├── LICENSE                        # MIT 许可证
 ├── .gitignore                     # Git 忽略规则
 │
-├── 1. 卸载旧版本和安装指定版本XClaw/  # OpenClaw 安装指南
+├── 1. 卸载旧版本和安装指定版本XClaw/
 │   ├── README.md
 │   └── uninstall_claw.sh
 │
-├── 2.浏览器控制和联网搜索/               # 浏览器配置
+├── 2.浏览器控制和联网搜索/
 │   └── README.md
 │
-├── 3.skills/                            # 技能管理
-│   └── README.md
+├── 3.skills/
+│   ├── README.md
+│   ├── 邮件推送/
+│   │   ├── README.md
+│   │   └── send_email.py          # RSS 论文推送 + LLM 摘要 + 邮件发送
+│   └── 生成论文图/
+│       └── README.md
 │
-├── 4.子智能体/                          # 8个科研子智能体
-│   ├── README.md                        # 子智能体说明
-│   ├── 子智能体技能配置指南.md          # 技能分配详情
-│   ├── skills-科研.md                   # 科研技能清单
-│   ├── agents_config.template.json      # 配置模板
-│   ├── workspace-researcher/            # 文献调研员工作区
-│   ├── workspace-idea/                  # 创意生成器工作区
-│   ├── workspace-mentor/                # 导师审核员工作区
-│   ├── workspace-architect/             # 架构设计师工作区
-│   ├── workspace-coder/                 # 实验工程师工作区
-│   ├── workspace-writer/                # 论文撰写员工作区
-│   ├── workspace-reviewer/              # 论文审稿人工作区
-│   └── workspace-coordinator/           # 科研主管工作区
+├── 4.子智能体/
+│   ├── README.md
+│   ├── 子智能体技能配置指南.md
+│   ├── skills-科研.md
+│   ├── agents_config.template.json
+│   ├── workspace-researcher/      # 文献调研员
+│   ├── workspace-idea/            # 创意生成器
+│   ├── workspace-mentor/          # 导师审核员
+│   ├── workspace-architect/       # 架构设计师
+│   ├── workspace-coder/           # 实验工程师
+│   ├── workspace-writer/          # 论文撰写员
+│   ├── workspace-reviewer/        # 论文审稿人
+│   └── workspace-coordinator/     # 科研主管
 │
-└── 5.科研协作平台/                      # （可选）部署指南
+└── 5.科研协作平台/
     └── README.md
+```
+
+---
+
+## 🔧 API Key 配置
+
+配置文件位于 `~/.openclaw/.env`，脚本会自动创建和填写：
+
+```bash
+# 邮件发送（必填）
+MATON_API_KEY=          # https://maton.ai
+
+# AI 搜索（可选）
+TAVILY_API_KEY=         # https://tavily.com
+
+# 论文图表（可选）
+POYO_API_KEY=           # https://poyo.ai
+
+# 千问 LLM（可选，已有默认值）
+# LLM_API_KEY=sk-xxx
 ```
 
 ---
@@ -162,61 +142,42 @@ XClaw-Auto-Configuration/
 
 ### 启动科研工作流
 
-```bash
-# 使用 coordinator 启动完整工作流
-sessions_spawn({
-  "task": "我想写一篇关于深度学习的论文，请协调各子智能体完成",
-  "agentId": "coordinator",
-  "mode": "session"
-})
+```
+@coordinator 我想写一篇关于深度学习的论文，请协调各子智能体完成
 ```
 
 ### 单独使用子智能体
 
-```bash
-# 文献调研
-sessions_spawn({
-  "task": "调研 Transformer 在计算机视觉中的最新进展",
-  "agentId": "researcher",
-  "mode": "session"
-})
+```
+@researcher 调研 Transformer 在计算机视觉中的最新进展
+@writer 根据实验结果撰写方法章节
+```
 
-# 论文撰写
-sessions_spawn({
-  "task": "根据实验结果撰写方法章节",
-  "agentId": "writer",
-  "mode": "session"
-})
+### 邮件推送
+
+```bash
+python3 3.skills/邮件推送/send_email.py
 ```
 
 ---
 
 ## 🔧 故障排查
 
-### 问题 1：子智能体无法启动
-
 ```bash
-# 检查配置
+# 检查 OpenClaw 状态
 openclaw status
 
-# 查看日志
+# 查看 Gateway 日志
 openclaw logs --follow
-```
 
-### 问题 2：技能未找到
-
-```bash
 # 检查技能安装
 clawhub list
-ls ~/.openclaw/workspace/skills/
-```
 
-### 问题 3：API 调用失败
+# 检查 API Key
+cat ~/.openclaw/.env
 
-```bash
-# 检查环境变量
-echo $MATON_API_KEY
-echo $GITHUB_TOKEN
+# 重新运行配置
+./setup.sh
 ```
 
 ---
@@ -225,18 +186,10 @@ echo $GITHUB_TOKEN
 
 | 文档 | 说明 |
 |------|------|
-| [1. 卸载旧版本和安装指定版本XClaw](./1.%20卸载旧版本和安装指定版本XClaw/) | OpenClaw 安装指南 |
-| [2.浏览器控制和联网搜索](./2.浏览器控制和联网搜索/) | 浏览器配置说明 |
-| [3.skills/](./3.skills/) | 技能管理指南 |
-| [4.子智能体/](./4.子智能体/) | 子智能体详细配置 |
-| [4.子智能体/子智能体技能配置指南.md](./4.子智能体/子智能体技能配置指南.md) | 技能分配详情 |
-| [5.科研协作平台/](./5.科研协作平台/) | 部署指南（可选） |
-
-**外部资源：**
-- [OpenClaw 官方文档](https://docs.openclaw.ai/)
-- [ClawHub 技能市场](https://clawhub.com/)
-- [LabClaw 技能库](https://github.com/wu-yc/LabClaw)
-- [Maton API Gateway](https://maton.ai/)
+| [OpenClaw 官方文档](https://docs.openclaw.ai/) | OpenClaw 使用指南 |
+| [ClawHub 技能市场](https://clawhub.com/) | 技能搜索和安装 |
+| [LabClaw 技能库](https://github.com/wu-yc/LabClaw) | 240 个生物医学技能 |
+| [Maton API Gateway](https://maton.ai/) | 邮件发送服务 |
 
 ---
 
@@ -244,7 +197,7 @@ echo $GITHUB_TOKEN
 
 | 脚本 | 用途 |
 |------|------|
-| `setup.sh` | ⭐ **交互式一键配置**（推荐） |
+| `setup.sh` | ⭐ **交互式一键配置**（断点续传、自动验证） |
 | `install.sh` | 非交互式批量安装 |
 | `validate.sh` | 配置验证检查 |
 | `uninstall_claw.sh` | 卸载 OpenClaw |
@@ -266,10 +219,4 @@ echo $GITHUB_TOKEN
 
 ---
 
-## ⭐ Star History
-
-如果觉得本项目有用，请给个 Star ⭐ 支持！
-
----
-
-*最后更新：2026-03-27*
+*最后更新：2026-03-31*
